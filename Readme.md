@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
-* Студент: [Татьяна Ли](https://up.htmlacademy.ru/ecmascript/12/user/703337).
-* Наставник: `Неизвестно`.
+* Студент: [Татьяна Панина](https://up.htmlacademy.ru/ecmascript/12/user/703337).
+* Наставник: [Арут Айдинян](https://htmlacademy.ru/profile/id1529101).
 
 ---
 
