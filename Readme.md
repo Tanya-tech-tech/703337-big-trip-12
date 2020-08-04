@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Татьяна Панина](https://up.htmlacademy.ru/ecmascript/12/user/703337).
-* Наставник: [Валерий Овечкин](https://htmlacademy.ru/profile/id1432451).
+* Наставник: [Арут Айдинян](https://htmlacademy.ru/profile/id1529101).
 
 ---
 
