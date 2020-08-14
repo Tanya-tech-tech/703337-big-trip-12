@@ -15,7 +15,7 @@ main {
   body {
     font-weight: 200;
     -moz-osx-font-smoothing: grayscale; } }
-
+.day {border: 3px solid;}
 .visually-hidden {
   position: absolute;
   overflow: hidden;
