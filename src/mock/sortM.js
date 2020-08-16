@@ -15,7 +15,7 @@ export const destinationToSort = {
   sortPrice: (destinations) => {
     const rezultPrice = destinations;
     rezultPrice.sort((a, b) => {
-      return a.price > b.price;
+      return a.price - b.price;
     });
     return rezultPrice;
   }
