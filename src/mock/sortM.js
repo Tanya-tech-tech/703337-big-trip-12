@@ -7,8 +7,7 @@ export const destinationToSort = {
   sortTime: (destinations) => {
     const rezultPrice = destinations;
     rezultPrice.sort((a, b) => {
-      let rankDiff = timeResidual(a) - timeResidual(b);
-      return rankDiff;
+      return timeResidual(a) - timeResidual(b);
     });
     return rezultPrice;
   },
@@ -16,13 +15,7 @@ export const destinationToSort = {
   sortPrice: (destinations) => {
     const rezultPrice = destinations;
     rezultPrice.sort((a, b) => {
-      if (a.price > b.price) {
-        return 1;
-      }
-      if (a.price < b.price) {
-        return -1;
-      }
-      return 0;
+      return a.price > b.price;
     });
     return rezultPrice;
   }
