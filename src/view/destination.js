@@ -1,3 +1,5 @@
+import {createElement} from "../utils.js";
+
 const isNameOptions = (nameOption) => {
   return Object.values(nameOption).some((it) => {
     return it === ``;
@@ -40,7 +42,7 @@ const timeResidual = (timeStart, timeEnd) => {
   return `${days}D ${hours}H ${minutes}M`;
 };
 
-export const createDestinationTemplate = (destinationPoint) => {
+const createDestinationTemplate = (destinationPoint) => {
   const {type, destination, time, price, additionalOptions} = destinationPoint;
 
   const symbolEuro = isNameOptions(additionalOptions.nameAndPriceOption) ? ``
@@ -87,3 +89,27 @@ export const createDestinationTemplate = (destinationPoint) => {
       </div>
     </li>`;
 };
+
+export default class Destination {
+  constructor(destination) {
+    this._destination = destination;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createDestinationTemplate(this._destination);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

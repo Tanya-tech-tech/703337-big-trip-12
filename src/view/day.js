@@ -1,4 +1,6 @@
-export const createDayTemplate = () => {
+import {createElement} from "../utils.js";
+
+const createDayTemplate = () => {
   return `<ul class="trip-days">
       <li class="trip-days__item  day">
         <div class="day__info">
@@ -34,3 +36,25 @@ export const createDayTemplate = () => {
 
     </ul>`;
 };
+
+export default class Days {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createDayTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
