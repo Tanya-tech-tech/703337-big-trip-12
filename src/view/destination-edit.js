@@ -1,8 +1,37 @@
-export const createFormEditTemplate = (destinationPoint = {}) => {
-  const {
-    type = ``,
-    destination = ``,
-  } = destinationPoint;
+import {createElement} from "../utils.js";
+
+const BLANK_TASK = {
+  type: ``,
+  destination: ``,
+  description: ``,
+  dueDate: null,
+  time: {
+    startTime: false,
+    endTime: false
+  },
+  price: null,
+  additionalOptions: {
+    typeOfOption: null,
+    nameAndPriceOption: null
+  },
+  infomation: {
+    description: ``,
+    photo: null
+  }
+};
+
+const creatDateNeedfulView = (date) => {
+  let day = date.getDate();
+  let numberMonth = date.getMonth() + 1;
+  let month = numberMonth < 10 ? `0` + numberMonth : numberMonth;
+  let year = `${date.getFullYear()}`.slice(-2);
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+};
+
+const createFormEditTemplate = (destinationPoint) => {
+  const {type, price, destination, time} = destinationPoint;
 
   const createIconEventEditTemplate = () => {
     return type.toLowerCase();
@@ -44,7 +73,7 @@ export const createFormEditTemplate = (destinationPoint = {}) => {
       visually-hidden" type="radio" name="event-type" value="${event.toLowerCase()}"
       ${type === event ? `checked` : ``}>
       <label class="event__type-label
-      event__type-label--${event.toLowerCase()}" for="event-type-taxi-1">${event.toLowerCase()}</label>
+      event__type-label--${event.toLowerCase()}" for="event-type-${event.toLowerCase()}-1">${event.toLowerCase()}</label>
       </div>`).join(``);
   };
 
@@ -60,7 +89,7 @@ export const createFormEditTemplate = (destinationPoint = {}) => {
       visually-hidden" type="radio" name="event-type" value="${event.toLowerCase()}"
       ${type === event ? `checked` : ``}>
       <label class="event__type-label
-      event__type-label--${event.toLowerCase()}" for="event-type-taxi-1">${event.toLowerCase()}</label>
+      event__type-label--${event.toLowerCase()}" for="event-type-${event.toLowerCase()}-1">${event.toLowerCase()}</label>
       </div>`).join(``);
   };
 
@@ -101,7 +130,7 @@ export const createFormEditTemplate = (destinationPoint = {}) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type} to
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -114,12 +143,12 @@ export const createFormEditTemplate = (destinationPoint = {}) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 00:00">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${creatDateNeedfulView(time.startTime)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 00:00">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${creatDateNeedfulView(time.endTime)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -127,7 +156,7 @@ export const createFormEditTemplate = (destinationPoint = {}) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -191,3 +220,27 @@ export const createFormEditTemplate = (destinationPoint = {}) => {
 
     </form>`;
 };
+
+export default class DestinationEdit {
+  constructor(destination) {
+    this._destination = destination || BLANK_TASK;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFormEditTemplate(this._destination);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
