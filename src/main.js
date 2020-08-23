@@ -1,9 +1,12 @@
 import SiteMenuView from "./view/site-menu.js";
 import RouteView from "./view/route.js";
+import CostValueView from "./view/cost-value.js";
 import FilterView from "./view/filter.js";
+import RouteListView from "./view/routeList.js";
 import SortView from "./view/sort.js";
 import DaysView from "./view/day.js";
 import DestinationView from "./view/destination.js";
+import NoDestinationView from "./view/no-destination.js";
 import DestinationEditView from "./view/destination-edit.js";
 import {generateDestination} from "./mock/destinationM.js";
 
@@ -80,32 +83,45 @@ const siteMainElement = document.querySelector(`.page-main`);
 const siteTripElement = document.querySelector(`.trip-events`);
 const siteTripEventsElement = siteMainElement.querySelector(`.trip-events`).querySelector(`h2:nth-child(1)`);
 
-renderElement(siteTripMainElement, new RouteView().getElement(), RenderPosition.AFTERBEGIN);
+const renderBoard = (boardTasks) => {
+  const routeListComponent = new RouteView();
+  const routeList = new RouteListView();
+  renderElement(siteTripMainElement, routeList.getElement(), RenderPosition.AFTERBEGIN);
+  renderElement(routeList.getElement(), new CostValueView().getElement(), RenderPosition.BEFOREEND);
+
+  if (boardTasks.every((destination) => !destination.destination)) {
+    renderElement(siteTripEventsElement, new NoDestinationView().getElement(), RenderPosition.AFTEREND);
+    return;
+  }
+
+  renderElement(routeList.getElement(), routeListComponent.getElement(), RenderPosition.AFTERBEGIN);
+  renderElement(siteTripEventsElement, new SortView().getElement(), RenderPosition.AFTEREND);
+
+  renderElement(siteTripElement, new DaysView().getElement(), RenderPosition.BEFOREEND);
+
+  const siteDayElement = document.querySelector(`.trip-days`);
+  const siteSecondDay = siteDayElement.querySelector(`li:nth-child(2)`);
+  const siteThirdDay = siteDayElement.querySelector(`li:nth-child(3)`);
+
+  const siteTripListFirstElement = siteDayElement.querySelector(`.trip-events__list`);
+  const siteTripListSecondElement = siteSecondDay.querySelector(`ul:nth-child(2)`);
+  const siteTripListThirdElement = siteThirdDay.querySelector(`ul:nth-child(2)`);
+
+  for (let i = 0; i < destinationsFirstDay.length; i++) {
+    renderDestination(siteTripListFirstElement, destinationsFirstDay[i]);
+  }
+  for (let i = 0; i < destinationsSecondDay.length; i++) {
+    renderDestination(siteTripListSecondElement, destinationsSecondDay[i]);
+  }
+  for (let i = 0; i < destinationsThirdDay.length; i++) {
+    renderDestination(siteTripListThirdElement, destinationsThirdDay[i]);
+  }
+};
+
+renderElement(siteTripMainElement, new RouteListView().getElement(), RenderPosition.AFTERBEGIN);
 renderElement(siteMenuElement, new SiteMenuView().getElement(), RenderPosition.AFTEREND);
 renderElement(siteSecondMenuElement, new FilterView(filters).getElement(), RenderPosition.BEFOREEND);
 
+renderBoard(destinations);
 
-renderElement(siteTripEventsElement, new SortView().getElement(), RenderPosition.AFTEREND);
-
-renderElement(siteTripElement, new DaysView().getElement(), RenderPosition.BEFOREEND);
-
-const siteDayElement = document.querySelector(`.trip-days`);
-const siteSecondDay = siteDayElement.querySelector(`li:nth-child(2)`);
-const siteThirdDay = siteDayElement.querySelector(`li:nth-child(3)`);
-
-const siteTripListFirstElement = siteDayElement.querySelector(`.trip-events__list`);
-const siteTripListSecondElement = siteSecondDay.querySelector(`ul:nth-child(2)`);
-const siteTripListThirdElement = siteThirdDay.querySelector(`ul:nth-child(2)`);
-
-for (let i = 0; i < destinationsFirstDay.length; i++) {
-  renderDestination(siteTripListFirstElement, destinationsFirstDay[i]);
-}
-
-for (let i = 0; i < destinationsSecondDay.length; i++) {
-  renderDestination(siteTripListSecondElement, destinationsSecondDay[i]);
-}
-
-for (let i = 0; i < destinationsThirdDay.length; i++) {
-  renderDestination(siteTripListThirdElement, destinationsThirdDay[i]);
-}
 
