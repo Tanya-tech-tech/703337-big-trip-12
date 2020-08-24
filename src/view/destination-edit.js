@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const BLANK_TASK = {
   type: ``,
@@ -221,26 +221,24 @@ const createFormEditTemplate = (destinationPoint) => {
     </form>`;
 };
 
-export default class DestinationEdit {
+export default class DestinationEdit extends AbstractView {
   constructor(destination) {
+    super();
     this._destination = destination || BLANK_TASK;
-
-    this._element = null;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createFormEditTemplate(this._destination);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
 }

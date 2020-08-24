@@ -1,4 +1,4 @@
-import {getCurrentDate} from "../utils.js";
+import {getCurrentDate} from "../utils/common.js";
 
 const isPast = (dueDate) => {
   const currentDate = getCurrentDate();
