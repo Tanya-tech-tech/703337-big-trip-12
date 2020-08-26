@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const сreateCostValueTemplate = () => {
   return `<p class="trip-info__cost">
@@ -6,24 +6,8 @@ const сreateCostValueTemplate = () => {
     </p>`;
 };
 
-export default class CostValue {
-  constructor() {
-    this._element = null;
-  }
-
+export default class CostValue extends AbstractView {
   getTemplate() {
     return сreateCostValueTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

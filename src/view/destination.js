@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const isNameOptions = (nameOption) => {
   return Object.values(nameOption).some((it) => {
@@ -90,26 +90,24 @@ const createDestinationTemplate = (destinationPoint) => {
     </li>`;
 };
 
-export default class Destination {
+export default class Destination extends AbstractView {
   constructor(destination) {
+    super();
     this._destination = destination;
-
-    this._element = null;
+    this._editClickHandler = this._editClickHandler.bind(this);
   }
 
   getTemplate() {
     return createDestinationTemplate(this._destination);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
   }
 }

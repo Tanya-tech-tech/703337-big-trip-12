@@ -2,7 +2,7 @@ import {WAYPOINTS} from "../const.js";
 import {DESTINATIONS} from "../const.js";
 import {DESCRIPTIONS} from "../const.js";
 import {NAMES} from "../const.js";
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
 
 const generateWaypoint = () => {
   return WAYPOINTS[getRandomInteger(0, WAYPOINTS.length - 1)];
