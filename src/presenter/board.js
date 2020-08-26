@@ -47,8 +47,9 @@ export default class Board {
       replace(destinationComponent, formEditComponent);
     };
     const onEscKeyDown = (evt) => {
+      evt.preventDefault();
       if (evt.key === `Escape` || evt.key === `Esc`) {
-        evt.preventDefault();
+
         replaceFormToDestination();
         document.removeEventListener(`keydown`, onEscKeyDown);
       }
