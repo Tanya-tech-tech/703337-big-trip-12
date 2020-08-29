@@ -43,4 +43,8 @@ export const NAMES = [
   `Travel by train`
 ];
 
-
+export const SortType = {
+  DEFAULT: `event`,
+  PRICE: `price`,
+  TIME: `time`
+};
