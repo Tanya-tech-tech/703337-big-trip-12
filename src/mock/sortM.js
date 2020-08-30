@@ -5,7 +5,7 @@ const timeResidual = (element) => {
 
 export const destinationToSort = {
   sortTime: (destinations) => {
-    const rezultPrice = destinations;
+    const rezultPrice = destinations.slice();
     rezultPrice.sort((a, b) => {
       return timeResidual(a) - timeResidual(b);
     });
@@ -13,7 +13,7 @@ export const destinationToSort = {
   },
 
   sortPrice: (destinations) => {
-    const rezultPrice = destinations;
+    const rezultPrice = destinations.slice();
     rezultPrice.sort((a, b) => {
       return a.price - b.price;
     });
