@@ -1,27 +1,28 @@
 import AbstractView from "./abstract.js";
 
-const isNameOptions = (nameOption) => {
-  return Object.values(nameOption).some((it) => {
-    return it === ``;
-  });
-};
-
 const displayOptions = (options) => {
   const count = 3;
-  const finalArray = [];
+  let finalArray = [];
   let displayArray = [];
-  if (options.length > count) {
+  if (options === ``) {
+    displayArray = options;
+    finalArray = options;
+  } else if (options.length > count) {
     for (let i = 0; i < count; i++) {
       displayArray.push(options[i]);
     }
+    for (let j = 0; j < displayArray.length; j++) {
+      const optionsValue = Object.values(displayArray[j]);
+      finalArray.push(optionsValue);
+    }
   } else {
     displayArray = options;
+    for (let j = 0; j < displayArray.length; j++) {
+      const optionsValue = Object.values(displayArray[j]);
+      finalArray.push(optionsValue);
+    }
   }
 
-  for (let j = 0; j < displayArray.length; j++) {
-    const optionsValue = Object.values(displayArray[j]);
-    finalArray.push(optionsValue);
-  }
   return finalArray;
 };
 
@@ -45,25 +46,41 @@ const timeResidual = (timeStart, timeEnd) => {
 const createDestinationTemplate = (destinationPoint) => {
   const {type, destination, time, price, additionalOptions} = destinationPoint;
 
-  const symbolEuro = isNameOptions(additionalOptions.nameAndPriceOption) ? ``
-    : `&plus;
-    &euro;&nbsp;`;
+  const createPlaceholderTemplate = () => {
+    const activity = [
+      `Check-in`,
+      `Sightseeing`,
+      `Restaurant`
+    ];
+
+    if (activity.some((it) => it === type)) {
+      return `in`;
+    } else {
+      return `to`;
+    }
+  };
+
+  const symbolEuro = additionalOptions
+    ? `&plus;
+    &euro;&nbsp;`
+    : ``;
 
   const createOptionTemplate = () => {
-    const currentOptions = displayOptions(additionalOptions.nameAndPriceOption);
+    const currentOptions = displayOptions(additionalOptions);
 
-    return currentOptions.map(([name, cost]) => `<li class="event__offer">
+    return currentOptions ? currentOptions.map(([name, cost]) => `<li class="event__offer">
     <span class="event__offer-title">${name}</span>
     ${symbolEuro} <span class="event__offer-price">${cost}</span>
-    </li>`).join(``);
+    </li>`).join(``)
+      : ``;
   };
 
   return `<li class="trip-events__item">
         <div class="event">
           <div class="event__type">
-            <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
+            <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
           </div>
-          <h3 class="event__title">${type} to ${destination}</h3>
+          <h3 class="event__title">${type} ${createPlaceholderTemplate()} ${destination}</h3>
 
         <div class="event__schedule">
           <p class="event__time">

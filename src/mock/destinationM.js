@@ -1,8 +1,10 @@
 import {WAYPOINTS} from "../const.js";
 import {DESTINATIONS} from "../const.js";
 import {DESCRIPTIONS} from "../const.js";
-import {NAMES} from "../const.js";
 import {getRandomInteger} from "../utils/common.js";
+import {optionForType} from "../const.js";
+
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const generateWaypoint = () => {
   return WAYPOINTS[getRandomInteger(0, WAYPOINTS.length - 1)];
@@ -19,37 +21,6 @@ const generateDescription = () => {
     fullDescription.push(DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)]);
   }
   return fullDescription;
-};
-
-const generateOptionPrice = () => {
-  const optionPrices = [20, 30, 40, 100, 150, 200, 300, 400, 1000];
-  return optionPrices[getRandomInteger(0, optionPrices.length - 1)];
-};
-
-const getRandomOption = () => {
-  const getRandomOptionName = () => {
-    const identifier = NAMES[getRandomInteger(0, NAMES.length - 1)];
-    return identifier;
-  };
-
-  return {
-    name: getRandomOptionName(),
-    cost: generateOptionPrice()
-  };
-};
-
-const generateOptionName = () => {
-  const quantityNames = getRandomInteger(0, 5);
-  let arrayNames = [];
-
-  if (quantityNames !== 0) {
-    for (let i = 0; i < quantityNames; i++) {
-      arrayNames.push(getRandomOption());
-    }
-  } else {
-    arrayNames = ``;
-  }
-  return arrayNames;
 };
 
 const generateDate = () => {
@@ -77,6 +48,33 @@ const generateEndTime = (date) => {
   return hoursValue;
 };
 
+const generateAppropriateArray = (appropriateType) => {
+  let arrayOptions;
+  const keys = Object.keys(optionForType);
+  for (const key of keys) {
+    if (appropriateType === key) {
+      arrayOptions = optionForType[key];
+    } else if (appropriateType === `Check-in`) {
+      arrayOptions = optionForType.CheckIn;
+    }
+  }
+  return arrayOptions;
+};
+
+const generateAppropriateOption = (appropriateArray) => {
+
+  let arrayNames = [];
+  if (appropriateArray === ``) {
+    arrayNames = appropriateArray;
+  }
+
+  for (let i = 0; i < appropriateArray.length; i++) {
+    arrayNames.push(appropriateArray[i]);
+  }
+
+  return arrayNames;
+};
+
 export const generateDestination = () => {
 
   const type = generateWaypoint();
@@ -85,9 +83,8 @@ export const generateDestination = () => {
   const endTime = generateEndTime(startTime);
   const price = getRandomInteger(5, 2000);
 
-  const typeOfOption = type;
-
   return {
+    id: generateId(),
     type,
     destination: generatePointDestination(),
     dueDate,
@@ -96,10 +93,9 @@ export const generateDestination = () => {
       endTime
     },
     price,
-    additionalOptions: {
-      typeOfOption,
-      nameAndPriceOption: generateOptionName(),
-    },
+    favorite: Boolean(getRandomInteger(0, 1)),
+    additionalOptions: generateAppropriateOption(generateAppropriateArray(type)),
+    description: generateDescription(),
     infomation: {
       description: generateDescription(),
       photo: `http://picsum.photos/248/152?r=${Math.random()}`

@@ -43,6 +43,19 @@ export const NAMES = [
   `Travel by train`
 ];
 
+export const optionForType = {
+  Taxi: [{name: `Lunch in city`, cost: 50}, {name: `Order Uber`, cost: 35}, {name: `Book tickets`, cost: 20}],
+  Bus: [{name:`Choose seats`, cost: 15}],
+  Train: [{name: `Travel by train`, cost: 100}, {name: `Add meal`, cost: 70}],
+  Ship: ``,
+  Transport: [{name: `Switch to comfort class`, cost: 40}],
+  Drive: [{name: `Rent a car`, cost: 300}],
+  Flight: [{name: `Add meal`, cost: 70}],
+  CheckIn: [{name: `Add breakfast`, cost: 120}],
+  Sightseeing: [{name: `Book tickets`, cost: 20}],
+  Restaurant: ``
+}
+
 export const SortType = {
   DEFAULT: `event`,
   PRICE: `price`,
