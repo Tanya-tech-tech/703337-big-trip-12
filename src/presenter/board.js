@@ -4,11 +4,11 @@ import RouteListView from "../view/routeList.js";
 import SortView from "../view/sort.js";
 import DaysView from "../view/day.js";
 import DaysListView from "../view/daysList.js";
-import DestinationView from "../view/destination.js";
-import NoDestinationView from "../view/no-destination.js";
-import DestinationEditView from "../view/destination-edit.js";
-import {renderElement, RenderPosition, replace} from "../utils/render.js";
+import DestinationPresenter from "./destinationP.js";
+import {updateItem} from "../utils/common.js";
 
+import NoDestinationView from "../view/no-destination.js";
+import {renderElement, RenderPosition} from "../utils/render.js";
 import {sortPrice, sortTime} from "../utils/destinationSort.js";
 import {SortType} from "../const.js";
 
@@ -20,6 +20,9 @@ export default class Board {
     this._routeListComponent = new RouteView();
     this._currentSortType = SortType.DEFAULT;
     this._datesTrip = [`2019-03-18`, `2019-03-19`, `2019-03-20`];
+
+    this._destinationPresenter = {};
+
     this._sortComponent = new SortView();
     this._routeList = new RouteListView();
     this._costValue = new CostValueView();
@@ -27,7 +30,11 @@ export default class Board {
     this._daysSort = new DaysView(this._datesTrip);
     this._daysList = new DaysListView();
     this._noDestinationComponent = new NoDestinationView();
+
+    this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleTaskChange = this._handleTaskChange.bind(this);
+
     this._destinationsFirstDay = [];
     this._destinationsSecondDay = [];
     this._destinationsThirdDay = [];
@@ -78,7 +85,6 @@ export default class Board {
   }
 
   _handleSortTypeChange(sortType) {
-    // - Сортируем задачи
     if (this._currentSortType === sortType) {
       return;
     }
@@ -117,46 +123,30 @@ export default class Board {
     renderElement(this._tripContainer, this._daysList, RenderPosition.BEFOREEND);
   }
 
-  _renderDestination(destinationListElement, destination) {
-    const destinationComponent = new DestinationView(destination);
-    const formEditComponent = new DestinationEditView(destination);
+  _handleModeChange() {
+    Object
+      .values(this._destinationPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
 
-    const replaceDestinationToForm = () => {
-      replace(formEditComponent, destinationComponent);
-    };
-    const replaceFormToDestination = () => {
-      replace(destinationComponent, formEditComponent);
-    };
-    const onEscKeyDown = (evt) => {
-      evt.preventDefault();
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        replaceFormToDestination();
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
+  _handleTaskChange(updatedDestination) {
+    this._boardDestinations = updateItem(this._boardDestinations, updatedDestination);
+    this._sourcedBoardDestinations = updateItem(this._sourcedBoardDestinations, updatedDestination);
+    this._destinationPresenter[updatedDestination.id].init(updatedDestination);
+  }
 
-    destinationComponent.setEditClickHandler(() => {
-      replaceDestinationToForm();
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
+  _renderDestination(destinationListComponent, destination) {
+    const destinationPresenter = new DestinationPresenter(destinationListComponent, this._handleTaskChange, this._handleModeChange);
+    destinationPresenter.init(destination);
+    this._destinationPresenter[destination.id] = destinationPresenter;
 
-    formEditComponent.setFormSubmitHandler(()=> {
-      replaceFormToDestination();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-
-    renderElement(destinationListElement, destinationComponent, RenderPosition. BEFOREEND);
   }
 
   _clearDestinationList() {
-    const daysContainer = document.querySelectorAll(`.trip-events__list`);
-    const daysDate = document.querySelectorAll(`.day__info`);
-    for (let i = 0; i < daysDate.length; i++) {
-      daysDate[i].innerHTML = ``;
-    }
-    for (let j = 0; j < daysContainer.length; j++) {
-      daysContainer[j].innerHTML = ``;
-    }
+    Object
+      .values(this._destinationPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._destinationPresenter = {};
   }
 
   _renderSortDestinations() {
