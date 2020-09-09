@@ -53,6 +53,11 @@ export default class Destination {
     remove(prevFormEditComponent);
   }
 
+  _handleFormSubmit(destination) {
+    this._changeData(destination);
+    this._replaceFormToDestination();
+  }
+
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceFormToDestination();
@@ -99,11 +104,6 @@ export default class Destination {
 
   _handleEditClick() {
     this._replaceDestinationToForm();
-  }
-
-  _handleFormSubmit(destination) {
-    this._changeData(destination);
-    this._replaceFormToDestination();
   }
 }
 

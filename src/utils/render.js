@@ -1,4 +1,5 @@
 import Abstract from "../view/abstract.js";
+import moment from "moment";
 
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
@@ -71,4 +72,12 @@ export const remove = (component) => {
 
   component.getElement().remove();
   component.removeElement();
+};
+
+export const formatTaskDueDate = (dueDate) => {
+  if (!(dueDate instanceof Date)) {
+    return ``;
+  }
+
+  return moment(dueDate).format(`HH:mm`);
 };
