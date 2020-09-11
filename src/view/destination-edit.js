@@ -2,6 +2,10 @@ import {optionForType} from "../const.js";
 import SmartView from "./smart.js";
 import {getRandomInteger} from "../utils/common.js";
 import {DESCRIPTIONS} from "../const.js";
+import {formatTaskDueDate} from "../utils/render.js";
+import flatpickr from "flatpickr";
+
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_TASK = {
   type: ``,
@@ -21,16 +25,6 @@ const BLANK_TASK = {
     description: ``,
     photo: null
   }
-};
-
-const creatDateNeedfulView = (date) => {
-  let day = date.getDate();
-  let numberMonth = date.getMonth() + 1;
-  let month = numberMonth < 10 ? `0` + numberMonth : numberMonth;
-  let year = `${date.getFullYear()}`.slice(-2);
-  let hours = date.getHours();
-  let minutes = date.getMinutes();
-  return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
 const createFormEditTemplate = (data) => {
@@ -190,12 +184,12 @@ const createFormEditTemplate = (data) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${creatDateNeedfulView(time.startTime)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatTaskDueDate(time.startTime)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${creatDateNeedfulView(time.endTime)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatTaskDueDate(time.endTime)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -231,14 +225,58 @@ export default class DestinationEdit extends SmartView {
   constructor(destination = BLANK_TASK) {
     super();
     this._data = DestinationEdit.parseDestinationToData(destination);
+    this._datepickerStart = null;
+    this._datepickerEnd = null;
     this._destination = destination;
 
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
-
+    this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
+    this._dueDateChangeHandlerEnd = this._dueDateChangeHandlerEnd.bind(this);
     this._typeToggleHandler = this._typeToggleHandler.bind(this);
     this._setInnerHandlers();
+    this._setDatepicker();
+  }
+
+  _setDatepicker() {
+    if (this._datepickerStart) {
+      this._datepickerStart = null;
+    }
+    if (this._datepickerEnd) {
+      this._datepickerEnd = null;
+    }
+
+    this._datepickerStart = flatpickr(
+        this.getElement().querySelector(`#event-start-time-1`),
+        {
+          enableTime: true,
+          dateFormat: `d/m/y H:i`,
+          defaultDate: this._data.time.startTime,
+          onChange: this._dueDateChangeHandler
+        }
+    );
+    this._datepickerEnd = flatpickr(
+        this.getElement().querySelector(`#event-end-time-1`),
+        {
+          enableTime: true,
+          dateFormat: `d/m/y H:i`,
+          defaultDate: this._data.time.endTime,
+          onChange: this._dueDateChangeHandlerEnd
+        }
+    );
+  }
+
+  _dueDateChangeHandler([userDate]) {
+    this.updateData({
+      time: {startTime: userDate, endTime: this._data.time.endTime}
+    });
+  }
+
+  _dueDateChangeHandlerEnd([userDate]) {
+    this.updateData({
+      time: {startTime: this._data.time.startTime, endTime: userDate}
+    });
   }
 
   reset(destination) {
@@ -254,7 +292,6 @@ export default class DestinationEdit extends SmartView {
         type: evt.target.textContent,
         additionalOptions: optionForType[evt.target.textContent]
       });
-
     }
   }
 
@@ -264,6 +301,7 @@ export default class DestinationEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
   }
 

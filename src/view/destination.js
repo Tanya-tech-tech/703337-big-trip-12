@@ -1,4 +1,6 @@
 import AbstractView from "./abstract.js";
+import {formatTaskDueDate} from "../utils/render.js";
+import moment from "moment";
 
 const displayOptions = (options) => {
   const count = 3;
@@ -27,20 +29,17 @@ const displayOptions = (options) => {
 };
 
 const timeResidual = (timeStart, timeEnd) => {
-  const residual = (timeEnd - timeStart);
+  const a = moment(timeStart);
+  const b = moment(timeEnd);
 
-  let minutes = Math.floor((residual / (1000 * 60)) % 60);
-  let hours = Math.floor((residual / (1000 * 60 * 60)) % 24);
-  let days = Math.floor((residual / (1000 * 60 * 60 * 24)));
-  hours = (hours < 10) ? `0` + hours : hours;
-  minutes = (minutes < 10) ? `0` + minutes : minutes;
-
-  if (!days && minutes && !hours) {
-    return `${minutes}M`;
-  } else if (!days && hours && minutes) {
-    return `${hours}H ${minutes}M`;
+  if (!b.diff(a, `hours`)) {
+    return `${b.diff(a, `minutes`)}M`;
   }
-  return `${days}D ${hours}H ${minutes}M`;
+  if (!b.diff(a, `days`)) {
+    return `${b.diff(a, `hours`)}H ${Math.floor((b.diff(a, `milisecunds`) / (1000 * 60)) % 60)}M`;
+  }
+  return `${b.diff(a, `days`)}D ${Math.floor((b.diff(a, `hours`) / (1000 * 60 * 60)) % 24) ? `${Math.floor((b.diff(a, `hours`) / (1000 * 60 * 60)) % 24)}H` : ``} ${Math.floor((b.diff(a, `milisecunds`) / (1000 * 60)) % 60)}M`;
+
 };
 
 const createDestinationTemplate = (destinationPoint) => {
@@ -84,9 +83,9 @@ const createDestinationTemplate = (destinationPoint) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T10:30">${time.startTime.toLocaleTimeString(`en-GB`, {hour12: false}).slice(0, -3)}</time>
+            <time class="event__start-time" datetime="2019-03-18T10:30">${formatTaskDueDate(time.startTime)}</time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T11:00">${time.endTime.toLocaleTimeString(`en-GB`, {hour12: false}).slice(0, -3)}</time>
+            <time class="event__end-time" datetime="2019-03-18T11:00">${formatTaskDueDate(time.endTime)}</time>
           </p>
           <p class="event__duration">${timeResidual(time.startTime, time.endTime)}</p>
         </div>
