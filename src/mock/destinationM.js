@@ -4,7 +4,7 @@ import {DESCRIPTIONS} from "../const.js";
 import {getRandomInteger} from "../utils/common.js";
 import {optionForType} from "../const.js";
 
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const generateWaypoint = () => {
   return WAYPOINTS[getRandomInteger(0, WAYPOINTS.length - 1)];

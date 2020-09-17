@@ -1,6 +1,8 @@
 import DestinationView from "../view/destination.js";
 import DestinationEditView from "../view/destination-edit.js";
 import {renderElement, RenderPosition, replace, remove} from "../utils/render.js";
+import {UserAction, UpdateType} from "../const.js";
+import {isDatesEqual} from "../utils/common.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -19,6 +21,7 @@ export default class Destination {
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
@@ -35,6 +38,7 @@ export default class Destination {
     this._destinationComponent.setEditClickHandler(this._handleEditClick);
     this._formEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._formEditComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._formEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevDestinationComponent === null || prevFormEditComponent === null) {
       renderElement(this._destinationListContainer, this._destinationComponent, RenderPosition.BEFOREEND);
@@ -53,9 +57,31 @@ export default class Destination {
     remove(prevFormEditComponent);
   }
 
-  _handleFormSubmit(destination) {
-    this._changeData(destination);
+  // _handleFormSubmit(destination) {
+  _handleFormSubmit(update) {
+  // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
+  // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
+    // this._changeData(destination);
+    if (update.destination === `Введите пункт назначения из предложенных`) {
+      return;
+    }
+    const isMinorUpdate = !isDatesEqual(this._destination.dueDate, update.dueDate);// true or false
+    this._changeData(
+        UserAction.UPDATE_TASK,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        update
+    );
+
     this._replaceFormToDestination();
+  }
+
+  _handleDeleteClick(destination) {
+    this._changeData(
+        UserAction.DELETE_TASK,
+        UpdateType.MINOR,
+        destination
+    );
+    // this._replaceFormToDestination();
   }
 
   resetView() {
@@ -66,6 +92,8 @@ export default class Destination {
 
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_TASK,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._destination,

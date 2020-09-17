@@ -78,6 +78,6 @@ export const formatTaskDueDate = (dueDate) => {
   if (!(dueDate instanceof Date)) {
     return ``;
   }
-
-  return moment(dueDate).format(`HH:mm`);
+  return moment(dueDate).format(`YYYY HH:mm`);
+  // return moment(dueDate).format(`HH:mm`);
 };

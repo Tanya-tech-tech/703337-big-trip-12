@@ -4,6 +4,7 @@ import {getRandomInteger} from "../utils/common.js";
 import {DESCRIPTIONS} from "../const.js";
 import {formatTaskDueDate} from "../utils/render.js";
 import flatpickr from "flatpickr";
+import {DESTINATIONS} from "../const.js";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
@@ -28,7 +29,8 @@ const BLANK_TASK = {
 };
 
 const createFormEditTemplate = (data) => {
-  const {type, price, destination, time, favorite, description, infomation, additionalOptions} = data;
+  let {type, price, destination, time, favorite, description, infomation, additionalOptions} = data;
+
   const waypoints = [
     `Taxi`,
     `Bus`,
@@ -47,7 +49,13 @@ const createFormEditTemplate = (data) => {
   ];
 
   const createIconEventEditTemplate = () => {
-    return type.toLowerCase();
+    if (!type) {
+      return waypoints[0].toLowerCase();
+    } else {
+      return type.toLowerCase();
+    }
+
+
   };
 
   const createDescriptionTemplate = infomation.description ?
@@ -197,7 +205,7 @@ const createFormEditTemplate = (data) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price ? price : ``}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -231,7 +239,10 @@ export default class DestinationEdit extends SmartView {
 
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._destinationPriceHandler = this._destinationPriceHandler.bind(this);
+    this._destinationPriceClickHandler = this._destinationPriceClickHandler.bind(this);
     this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
     this._dueDateChangeHandlerEnd = this._dueDateChangeHandlerEnd.bind(this);
     this._typeToggleHandler = this._typeToggleHandler.bind(this);
@@ -269,8 +280,10 @@ export default class DestinationEdit extends SmartView {
 
   _dueDateChangeHandler([userDate]) {
     this.updateData({
+      dueDate: userDate,
       time: {startTime: userDate, endTime: this._data.time.endTime}
     });
+
   }
 
   _dueDateChangeHandlerEnd([userDate]) {
@@ -279,10 +292,48 @@ export default class DestinationEdit extends SmartView {
     });
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepicker) {
+      this._datepicker.destroy();
+      this._datepicker = null;
+    }
+  }
+
   reset(destination) {
     this.updateData(
         DestinationEdit.parseDestinationToData(destination)
     );
+  }
+
+  getTemplate() {
+    return createFormEditTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this._setDatepicker();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__type-list`)
+      .addEventListener(`click`, this._typeToggleHandler);
+    this.getElement()
+      .querySelector(`.event__input`)
+      .addEventListener(`click`, this._destinationClickInputHandler);
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`input`, this._destinationInputHandler);
+    this.getElement()
+      .querySelector(`.event__input--price`)
+      .addEventListener(`click`, this._destinationPriceClickHandler);
+    this.getElement()
+      .querySelector(`.event__input--price`)
+      .addEventListener(`input`, this._destinationPriceHandler);
   }
 
   _typeToggleHandler(evt) {
@@ -295,28 +346,6 @@ export default class DestinationEdit extends SmartView {
     }
   }
 
-  getTemplate() {
-    return createFormEditTemplate(this._data);
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this._setDatepicker();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-  }
-
-  _setInnerHandlers() {
-    this.getElement()
-      .querySelector(`.event__type-list`)
-      .addEventListener(`click`, this._typeToggleHandler);
-    this.getElement()
-      .querySelector(`.event__input`)
-      .addEventListener(`click`, this._destinationClickInputHandler);
-    this.getElement()
-      .querySelector(`.event__input`)
-      .addEventListener(`input`, this._destinationInputHandler);
-  }
-
   _destinationClickInputHandler(evt) {
     evt.preventDefault();
     document.querySelector(`.event__input`).value = ``;
@@ -324,11 +353,41 @@ export default class DestinationEdit extends SmartView {
 
   _destinationInputHandler(evt) {
     evt.preventDefault();
+    const checkNameDestination = DESTINATIONS.filter((it) => it === evt.target.value);
+
+    if (checkNameDestination.length === 0) {
+      evt.target.value = `Введите пункт назначения из предложенных`;
+    }
     this.updateData({
       destination: evt.target.value
     }, false);
     this.updateData({
       description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length)]
+    }, false);
+  }
+
+  _destinationPriceClickHandler(evt) {
+    evt.preventDefault();
+    document.querySelector(`.event__input--price`).value = ``;
+  }
+
+  _destinationPriceHandler(evt) {
+    // evt.preventDefault();
+    if (event.keyCode === 46 || event.keyCode === 8 || event.keyCode === 9 || event.keyCode === 27 ||
+    // Разрешаем: Ctrl+A
+    (event.keyCode === 65 && event.ctrlKey === true) ||
+    // Разрешаем: home, end, влево, вправо
+    (event.keyCode >= 35 && event.keyCode <= 39)) {
+      return;
+    } else {
+    // Запрещаем все, кроме цифр на основной клавиатуре, а так же Num-клавиатуре
+      if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+        event.preventDefault();
+      }
+    }
+
+    this.updateData({
+      price: evt.target.value
     }, false);
   }
 
@@ -350,6 +409,16 @@ export default class DestinationEdit extends SmartView {
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteClickHandler);
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(DestinationEdit.parseDataToDestination(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
   static parseDestinationToData(destination) {
