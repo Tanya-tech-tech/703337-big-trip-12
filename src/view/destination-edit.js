@@ -327,13 +327,13 @@ export default class DestinationEdit extends SmartView {
       .addEventListener(`click`, this._destinationClickInputHandler);
     this.getElement()
       .querySelector(`.event__input--destination`)
-      .addEventListener(`input`, this._destinationInputHandler);
+      .addEventListener(`blur`, this._destinationInputHandler);
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`click`, this._destinationPriceClickHandler);
     this.getElement()
       .querySelector(`.event__input--price`)
-      .addEventListener(`input`, this._destinationPriceHandler);
+      .addEventListener(`blur`, this._destinationPriceHandler, true);
   }
 
   _typeToggleHandler(evt) {
