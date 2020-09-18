@@ -38,7 +38,7 @@ const timeResidual = (timeStart, timeEnd) => {
   if (!b.diff(a, `days`)) {
     return `${b.diff(a, `hours`)}H ${Math.floor((b.diff(a, `milisecunds`) / (1000 * 60)) % 60)}M`;
   }
-  return `${b.diff(a, `days`)}D ${Math.floor((b.diff(a, `hours`) / (1000 * 60 * 60)) % 24) ? `${Math.floor((b.diff(a, `hours`) / (1000 * 60 * 60)) % 24)}H` : ``} ${Math.floor((b.diff(a, `milisecunds`) / (1000 * 60)) % 60)}M`;
+  return `${b.diff(a, `days`)}D ${Math.floor((b.diff(a, `milisecunds`) / (1000 * 60 * 60)) % 24) ? `${Math.floor((b.diff(a, `milisecunds`) / (1000 * 60 * 60)) % 24)}H` : ``} ${Math.floor((b.diff(a, `milisecunds`) / (1000 * 60)) % 60)}M`;
 
 };
 
@@ -77,7 +77,7 @@ const createDestinationTemplate = (destinationPoint) => {
   return `<li class="trip-events__item">
         <div class="event">
           <div class="event__type">
-            <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+            <img class="event__type-icon" width="42" height="42" src="img/icons/${type ? type.toLowerCase() : `taxi`}.png" alt="Event type icon">
           </div>
           <h3 class="event__title">${type} ${createPlaceholderTemplate()} ${destination}</h3>
 
@@ -91,7 +91,7 @@ const createDestinationTemplate = (destinationPoint) => {
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${price}</span>
+          &euro;&nbsp;<span class="event__price-value">${price ? price : ``}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>

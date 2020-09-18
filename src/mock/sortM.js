@@ -5,11 +5,11 @@ const timeResidual = (element) => {
 
 export const destinationToSort = {
   sortTime: (destinations) => {
-    const rezultPrice = destinations.slice();
-    rezultPrice.sort((a, b) => {
+    const rezultTime = destinations.slice();
+    rezultTime.sort((a, b) => {
       return timeResidual(a) - timeResidual(b);
     });
-    return rezultPrice;
+    return rezultTime;
   },
 
   sortPrice: (destinations) => {
