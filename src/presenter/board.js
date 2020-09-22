@@ -45,8 +45,9 @@ export default class Board {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
-    this._pointsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    // this._pointsModel.addObserver(this._handleModelEvent);
+    // this._filterModel.addObserver(this._handleModelEvent);
+
     this._pointListComponent = null;
     this._pointNewPresenter = new PointNewPresenter(this._daysList.getElement(), this._handleViewAction);
   }
@@ -54,15 +55,26 @@ export default class Board {
   init() {
     renderElement(this._routeContainer, this._routeList, RenderPosition.AFTERBEGIN);
     renderElement(this._routeList, this._costValue, RenderPosition.BEFOREEND);
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
     this._renderBoard();
   }
 
-  createPoint() {
+  destroy() {
+    this._clearBoard({resetRenderedTaskCount: true, resetSortType: true});
+    remove(this._destinationList);
+
+
+    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
+
+  createPoint(callback) {
     this._currentSortType = SortType.DEFAULT;
     this._pointListComponent = this._sortComponent.getElement();
 
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._pointNewPresenter.init();
+    this._pointNewPresenter.init(callback);
   }
 
   _getPoints() {

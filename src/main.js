@@ -1,12 +1,13 @@
 import SiteMenuView from "./view/site-menu.js";
-import FilterView from "./view/filter.js";
+import StatisticsView from "./view/statistics.js";
+
 import BoardPresenter from "./presenter/board.js";
 import FilterPresenter from "./presenter/filterP.js";
 import PointsModel from "./model/points.js";
 import FilterModel from "./model/filterModel.js";
 import {generateDestination} from "./mock/destinationM.js";
-//import {generateFilter} from "./mock/filterM.js";
-import {renderElement, RenderPosition} from "./utils/render.js";
+import {renderElement, RenderPosition, remove} from "./utils/render.js";
+import {MenuItem, UpdateType, FilterType} from "./const.js";
 
 const TASK_COUNT = 4;
 
@@ -25,15 +26,62 @@ const siteTripEventsElement = siteMainElement.querySelector(`.trip-events`).quer
 const siteMenuElement = siteTripMainElement.querySelector(`.trip-main__trip-controls`).querySelector(`h2:nth-child(1)`);
 const siteSecondMenuElement = siteTripMainElement.querySelector(`.trip-main__trip-controls`);
 
+const siteMenuComponent = new SiteMenuView();
+renderElement(siteMenuElement, siteMenuComponent, RenderPosition.AFTEREND);
 
-renderElement(siteMenuElement, new SiteMenuView().getElement(), RenderPosition.AFTEREND);
-//renderElement(siteSecondMenuElement, new FilterView(filters).getElement(), RenderPosition.BEFOREEND);
 const boardPresenter = new BoardPresenter(siteTripMainElement, siteTripElement, siteTripEventsElement, pointsModel, filterModel);
 const filterPresenter = new FilterPresenter(siteSecondMenuElement, filterModel, pointsModel);
+
+const handleTaskNewFormClose = () => {
+  siteMenuComponent.getElement().querySelector(`[id=${MenuItem.TABLE}]`).classList.add(`trip-tabs__btn--active`);
+  siteMenuComponent.setMenuItem(MenuItem.TABLE);
+};
+let statisticsComponent = null;
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.ADD_NEW_EVENT:
+      // Скрыть статистику
+      remove(statisticsComponent);
+      // Показать доску
+      boardPresenter.destroy();
+      filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
+      boardPresenter.init();
+      // Показать форму добавления новой задачи
+      boardPresenter.createTask(handleTaskNewFormClose);
+      // Убрать выделение с ADD NEW TASK после сохранения
+      siteMenuComponent.getElement().querySelector(`[id=${MenuItem.TABLE}]`).disabled = true;
+      break;
+    case MenuItem.TABLE:
+      // Показать доску
+      document.querySelector(`#${MenuItem.STATS}`).classList.remove(`trip-tabs__btn--active`);
+      boardPresenter.init();
+      // Скрыть статистику
+      remove(statisticsComponent);
+      break;
+    case MenuItem.STATS:
+      // Скрыть доску
+      document.querySelector(`#${MenuItem.TABLE}`).classList.remove(`trip-tabs__btn--active`);
+      boardPresenter.destroy();
+      // Показать статистику
+      statisticsComponent = new StatisticsView(pointsModel.getPoints());
+      renderElement(siteTripElement, statisticsComponent, RenderPosition.AFTEREND);
+
+      break;
+  }
+};
+
+siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+
 filterPresenter.init();
 boardPresenter.init();
 
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
   evt.preventDefault();
-  boardPresenter.createPoint();
+  if (statisticsComponent !== null) {
+    remove(statisticsComponent);
+    boardPresenter.init();
+  }
+
+  boardPresenter.createPoint(handleTaskNewFormClose);
 });
