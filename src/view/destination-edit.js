@@ -333,7 +333,7 @@ export default class DestinationEdit extends SmartView {
       .addEventListener(`click`, this._destinationPriceClickHandler);
     this.getElement()
       .querySelector(`.event__input--price`)
-      .addEventListener(`blur`, this._destinationPriceHandler, true);
+      .addEventListener(`input`, this._destinationPriceHandler, true);
   }
 
   _typeToggleHandler(evt) {

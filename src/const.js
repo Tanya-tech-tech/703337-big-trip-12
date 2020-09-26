@@ -1,15 +1,18 @@
-export const WAYPOINTS = [
-  `Taxi`,
-  `Bus`,
-  `Train`,
-  `Ship`,
-  `Transport`,
-  `Drive`,
-  `Flight`,
-  `Check-in`,
-  `Sightseeing`,
-  `Restaurant`
-];
+export const Waypoints = {
+  TAXI: `Taxi`,
+  BUS: `Bus`,
+  TRAIN: `Train`,
+  SHIP: `Ship`,
+  TRANSPORT: `Transport`,
+  DRIVE: `Drive`,
+  FLIGHT: `Flight`,
+  CHECKIN: `Check-in`,
+  SIGHTSEEING: `Sightseeing`,
+  RESTAURANT: `Restaurant`
+};
+
+export const WAYPOINTS = Object.values(Waypoints);
+
 export const DESTINATIONS = [
   `Moscow`,
   `Krasnodar`,
@@ -45,7 +48,7 @@ export const NAMES = [
 
 export const optionForType = {
   Taxi: [{name: `Lunch in city`, cost: 50}, {name: `Order Uber`, cost: 35}, {name: `Book tickets`, cost: 20}],
-  Bus: [{name:`Choose seats`, cost: 15}],
+  Bus: [{name: `Choose seats`, cost: 15}],
   Train: [{name: `Travel by train`, cost: 100}, {name: `Add meal`, cost: 70}],
   Ship: ``,
   Transport: [{name: `Switch to comfort class`, cost: 40}],
@@ -54,7 +57,7 @@ export const optionForType = {
   CheckIn: [{name: `Add breakfast`, cost: 120}],
   Sightseeing: [{name: `Book tickets`, cost: 20}],
   Restaurant: ``
-}
+};
 
 export const SortType = {
   DEFAULT: `event`,
@@ -78,4 +81,10 @@ export const FilterType = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
   PAST: `past`
+};
+
+export const MenuItem = {
+  ADD_NEW_EVENT: `ADD_NEW_EVENT`,
+  TABLE: `TABLE`,
+  STATS: `STATS`
 };
