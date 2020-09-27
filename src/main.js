@@ -1,22 +1,17 @@
 import SiteMenuView from "./view/site-menu.js";
 import StatisticsView from "./view/statistics.js";
-
+import Api from "./api.js";
 import BoardPresenter from "./presenter/board.js";
 import FilterPresenter from "./presenter/filterP.js";
 import PointsModel from "./model/points.js";
 import FilterModel from "./model/filterModel.js";
-import {generateDestination} from "./mock/destinationM.js";
+// import {generateDestination} from "./mock/destinationM.js";
 import {renderElement, RenderPosition, remove} from "./utils/render.js";
 import {MenuItem, UpdateType, FilterType} from "./const.js";
 
-const TASK_COUNT = 4;
-
-const destinations = new Array(TASK_COUNT).fill().map(generateDestination);
-export const datesArray = destinations.slice();
-const pointsModel = new PointsModel();
-pointsModel.setPoints(destinations);
-
-const filterModel = new FilterModel();
+// const TASK_COUNT = 4;
+const AUTHORIZATION = `Basic aS2nd3dPwcl4sa6j`;
+const END_POINT = `https://12.ecmascript.pages.academy/big-trip/`;
 
 const siteMainElement = document.querySelector(`.page-main`);
 const siteTripMainElement = document.querySelector(`.trip-main`);
@@ -26,10 +21,16 @@ const siteTripEventsElement = siteMainElement.querySelector(`.trip-events`).quer
 const siteMenuElement = siteTripMainElement.querySelector(`.trip-main__trip-controls`).querySelector(`h2:nth-child(1)`);
 const siteSecondMenuElement = siteTripMainElement.querySelector(`.trip-main__trip-controls`);
 
-const siteMenuComponent = new SiteMenuView();
-renderElement(siteMenuElement, siteMenuComponent, RenderPosition.AFTEREND);
+const api = new Api(END_POINT, AUTHORIZATION);
+const pointsModel = new PointsModel();
+// pointsModel.setPoints(destinations);
 
-const boardPresenter = new BoardPresenter(siteTripMainElement, siteTripElement, siteTripEventsElement, pointsModel, filterModel);
+const filterModel = new FilterModel();
+
+const siteMenuComponent = new SiteMenuView();
+
+
+const boardPresenter = new BoardPresenter(siteTripMainElement, siteTripElement, siteTripEventsElement, pointsModel, filterModel, api);
 const filterPresenter = new FilterPresenter(siteSecondMenuElement, filterModel, pointsModel);
 
 const handleTaskNewFormClose = () => {
@@ -66,15 +67,28 @@ const handleSiteMenuClick = (menuItem) => {
       // Показать статистику
       statisticsComponent = new StatisticsView(pointsModel.getPoints());
       renderElement(siteTripElement, statisticsComponent, RenderPosition.AFTEREND);
-
       break;
   }
 };
 
 siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+renderElement(siteMenuElement, siteMenuComponent, RenderPosition.AFTEREND);
 
 filterPresenter.init();
 boardPresenter.init();
+
+api.getTasks()
+  .then((tasks) => {
+
+    pointsModel.setPoints(UpdateType.INIT, tasks);
+    renderElement(siteMenuElement, siteMenuComponent, RenderPosition.AFTEREND);
+    siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+  })
+  .catch(() => {
+    pointsModel.setPoints(UpdateType.INIT, []);
+    renderElement(siteMenuElement, siteMenuComponent, RenderPosition.AFTEREND);
+    siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+  });
 
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
   evt.preventDefault();

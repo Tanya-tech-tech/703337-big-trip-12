@@ -1,3 +1,18 @@
+import Api from "./api.js";
+/*
+export const optionForType = {
+  Taxi: [{name: `Lunch in city`, cost: 50}, {name: `Order Uber`, cost: 35}, {name: `Book tickets`, cost: 20}],
+  Bus: [{name: `Choose seats`, cost: 15}],
+  Train: [{name: `Travel by train`, cost: 100}, {name: `Add meal`, cost: 70}],
+  Ship: ``,
+  Transport: [{name: `Switch to comfort class`, cost: 40}],
+  Drive: [{name: `Rent a car`, cost: 300}],
+  Flight: [{name: `Add meal`, cost: 70}],
+  CheckIn: [{name: `Add breakfast`, cost: 120}],
+  Sightseeing: [{name: `Book tickets`, cost: 20}],
+  Restaurant: ``
+};*/
+
 export const Waypoints = {
   TAXI: `Taxi`,
   BUS: `Bus`,
@@ -12,52 +27,6 @@ export const Waypoints = {
 };
 
 export const WAYPOINTS = Object.values(Waypoints);
-
-export const DESTINATIONS = [
-  `Moscow`,
-  `Krasnodar`,
-  `Batumy`,
-  `Sochi`,
-  `Kolomna`
-];
-export const DESCRIPTIONS = [
-  `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
-  `Cras aliquet varius magna, non porta ligula feugiat eget.`,
-  `Fusce tristique felis at fermentum pharetra.`,
-  `Aliquam id orci ut lectus varius viverra.`,
-  `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
-  `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
-  `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`,
-  `Sed sed nisi sed augue convallis suscipit in sed felis.`,
-  `Aliquam erat volutpat.`,
-  `Nunc fermentum tortor ac porta dapibus.`,
-  `In rutrum ac purus sit amet tempus.`
-];
-export const NAMES = [
-  `Order Uber`,
-  `Add breakfast`,
-  `Book tickets`,
-  `Lunch in city`,
-  `Rent a car`,
-  `Add luggage`,
-  `Switch to comfort class`,
-  `Add meal`,
-  `Choose seats`,
-  `Travel by train`
-];
-
-export const optionForType = {
-  Taxi: [{name: `Lunch in city`, cost: 50}, {name: `Order Uber`, cost: 35}, {name: `Book tickets`, cost: 20}],
-  Bus: [{name: `Choose seats`, cost: 15}],
-  Train: [{name: `Travel by train`, cost: 100}, {name: `Add meal`, cost: 70}],
-  Ship: ``,
-  Transport: [{name: `Switch to comfort class`, cost: 40}],
-  Drive: [{name: `Rent a car`, cost: 300}],
-  Flight: [{name: `Add meal`, cost: 70}],
-  CheckIn: [{name: `Add breakfast`, cost: 120}],
-  Sightseeing: [{name: `Book tickets`, cost: 20}],
-  Restaurant: ``
-};
 
 export const SortType = {
   DEFAULT: `event`,
@@ -74,7 +43,8 @@ export const UserAction = {
 export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  INIT: `INIT`
 };
 
 export const FilterType = {
@@ -88,3 +58,53 @@ export const MenuItem = {
   TABLE: `TABLE`,
   STATS: `STATS`
 };
+
+export let optionsArray = [];
+
+export let optionForType = {};
+
+export let DESTINATIONS = [];
+export let DESCRIPTIONS = [];
+
+const AUTHORIZATION = `Basic aS2nd3dPwcl4sa6j`;
+const END_POINT = `https://12.ecmascript.pages.academy/big-trip/`;
+const api = new Api(END_POINT, AUTHORIZATION);
+
+api.getOffers()
+.then((tasks) => {
+  for (let i = 0; i < tasks.length; i++) {
+    optionsArray.push(tasks[i]);
+  }
+  return tasks;
+})
+.then((optionArray) => {
+  optionArray.map((it) => {
+    Object.assign(optionForType, it);
+  });
+
+  optionArray = optionForType;
+});
+
+api.getDestinations()
+  .then((array) => {
+    array.map((it) => {
+      DESTINATIONS.push(it.name);
+    });
+    return array;
+  })
+  .then((array) => {
+    const sss = [];
+    array.map((it) => {
+      it = Object.values(it);
+      sss.push(it);
+    });
+    return sss;
+  })
+  .then((array) => {
+
+    array.map(([name, description, photo]) => {
+      const lll = {[name]: {advantage: description, src: photo}};
+      DESCRIPTIONS.push(lll);
+    });
+    return array;
+  });
