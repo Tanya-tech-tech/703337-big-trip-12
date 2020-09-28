@@ -29,7 +29,19 @@ const BLANK_TASK = {
 };
 
 const createFormEditTemplate = (data) => {
-  let {type, price, destination, time, favorite, information, description, additionalOptions} = data;
+  let {
+    type,
+    price,
+    destination,
+    time,
+    favorite,
+    information,
+    description,
+    additionalOptions,
+    isDisabled,
+    isSaving,
+    isDeleting
+  } = data;
 
   const waypoints = [
     `Taxi`,
@@ -80,7 +92,8 @@ const createFormEditTemplate = (data) => {
       : ``;
 
     if (destination) {
-      return `<button class="event__reset-btn" type="reset">Delete</button>
+      return `<button class="event__reset-btn" type="reset">
+      ${isDeleting ? `deleting...` : `delete`}</button>
     <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${createButtonFavoriteTemplate}>
     <label class="event__favorite-btn" for="event-favorite-1">
       <span class="visually-hidden">Add to favorite</span>
@@ -165,7 +178,8 @@ const createFormEditTemplate = (data) => {
             <img class="event__type-icon" width="17" height="17" src="img/icons/${iconEvent}.png" alt="Event type icon">
           </label>
 
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1"
+          type="checkbox" ${isDisabled ? `disabled` : ``}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -190,7 +204,8 @@ const createFormEditTemplate = (data) => {
           </label>
           <input class="event__input  event__input--destination"
           id="event-destination-1" type="text" name="event-destination"
-          value="${destination}" list="destination-list-1">
+          value="${destination}" list="destination-list-1"
+          ${isDisabled ? `disabled` : ``}>
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -203,12 +218,18 @@ const createFormEditTemplate = (data) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatTaskDueDate(time.startTime)}">
+          <input class="event__input  event__input--time" id="event-start-time-1"
+          type="text" name="event-start-time" value="${formatTaskDueDate(time.startTime)}"
+          ${isDisabled ? `disabled` : ``}
+          >
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatTaskDueDate(time.endTime)}">
+          <input class="event__input  event__input--time" id="event-end-time-1"
+          type="text" name="event-end-time" value="${formatTaskDueDate(time.endTime)}"
+          ${isDisabled ? `disabled` : ``}
+          >
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -216,10 +237,14 @@ const createFormEditTemplate = (data) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price ? price : ``}">
+          <input class="event__input  event__input--price" id="event-price-1"
+          type="text" name="event-price" value="${price ? price : ``}"
+          ${isDisabled ? `disabled` : ``}
+          >
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit">
+        ${isSaving ? `saving...` : `save`}</button>
 
         ${buttonAndOffers}
 
@@ -451,6 +476,9 @@ export default class DestinationEdit extends SmartView {
         destination,
         {
           isFavorite: destination.favorite !== null,
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false
         }
     );
   }
@@ -461,7 +489,12 @@ export default class DestinationEdit extends SmartView {
     if (!data.isFavorite) {
       data.favorite = null;
     }
+
     delete data.isFavorite;
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
+
     return data;
   }
 }
