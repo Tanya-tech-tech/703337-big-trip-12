@@ -59,9 +59,6 @@ export default class Destination {
 
   // _handleFormSubmit(destination) {
   _handleFormSubmit(update) {
-  // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
-  // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
-    // this._changeData(destination);
     if (update.destination === `Введите пункт назначения из предложенных`) {
       return;
     }
@@ -134,4 +131,3 @@ export default class Destination {
     this._replaceDestinationToForm();
   }
 }
-

@@ -1,12 +1,12 @@
 import {optionForType} from "../const.js";
 import SmartView from "./smart.js";
-import {getRandomInteger} from "../utils/common.js";
 import {DESCRIPTIONS} from "../const.js";
 import {formatTaskDueDate} from "../utils/render.js";
 import flatpickr from "flatpickr";
 import {DESTINATIONS} from "../const.js";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+// console.log(optionForType)
 
 const BLANK_TASK = {
   type: ``,
@@ -29,7 +29,7 @@ const BLANK_TASK = {
 };
 
 const createFormEditTemplate = (data) => {
-  let {type, price, destination, time, favorite, description, infomation, additionalOptions} = data;
+  let {type, price, destination, time, favorite, information, description, additionalOptions} = data;
 
   const waypoints = [
     `Taxi`,
@@ -54,19 +54,27 @@ const createFormEditTemplate = (data) => {
     } else {
       return type.toLowerCase();
     }
-
-
   };
 
-  const createDescriptionTemplate = infomation.description ?
+  const createPhotoTemplate = (arrayPhoto) => {
+
+    return arrayPhoto.map((photo) => `<img class="event__photo"
+      src="${photo.src}" alt="${photo.description}">`).join(``);
+  };
+
+  const createDescriptionTemplate = description ?
     `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
     <p class="event__destination-description">${description}</p>
-    </section>`
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${createPhotoTemplate(information.photo)}
+      </div>
+    </div>
+  </section>`
     : ``;
 
   const createButtonOfferEditTemplate = () => {
-
     const createButtonFavoriteTemplate = favorite ?
       `checked`
       : ``;
@@ -128,17 +136,20 @@ const createFormEditTemplate = (data) => {
       }
       return finalArray;
     };
+
     const currentOptions = displayOptions(additionalOptions);
 
-    return currentOptions.map(([name, cost]) => `<div class="event__offer-selector">
+    return currentOptions.map(([title, cost]) => `<div class="event__offer-selector">
           <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
           <label class="event__offer-label" for="event-offer-luggage-1">
-            <span class="event__offer-title">${name}</span>
+            <span class="event__offer-title">${title}</span>
             &plus;
             &euro;&nbsp;<span class="event__offer-price">${cost}</span>
           </label>
         </div>`).join(``);
   };
+
+  let newType = type ? type[0].toUpperCase() + type.slice(1) : ``;
 
   const buttonAndOffers = createButtonOfferEditTemplate();
   const iconEvent = createIconEventEditTemplate();
@@ -175,7 +186,7 @@ const createFormEditTemplate = (data) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${type} ${createPlaceholderTemplate()}
+            ${type ? newType : ``} ${createPlaceholderTemplate()}
           </label>
           <input class="event__input  event__input--destination"
           id="event-destination-1" type="text" name="event-destination"
@@ -341,7 +352,7 @@ export default class DestinationEdit extends SmartView {
     if (evt.target.tagName === `LABEL`) {
       this.updateData({
         type: evt.target.textContent,
-        additionalOptions: optionForType[evt.target.textContent]
+        additionalOptions: optionForType[evt.target.textContent.toLowerCase()]
       });
     }
   }
@@ -355,6 +366,16 @@ export default class DestinationEdit extends SmartView {
     evt.preventDefault();
     const checkNameDestination = DESTINATIONS.filter((it) => it === evt.target.value);
 
+    const dueArray = [];
+    DESCRIPTIONS.slice().forEach((it) => {
+      const key = Object.keys(it).find((element) => element === evt.target.value);
+      if (key !== undefined) {
+        dueArray.push(it);
+      }
+    });
+
+    // console.log(dueArray[0][evt.target.value].src)
+
     if (checkNameDestination.length === 0) {
       evt.target.value = `Введите пункт назначения из предложенных`;
     }
@@ -362,7 +383,10 @@ export default class DestinationEdit extends SmartView {
       destination: evt.target.value
     }, false);
     this.updateData({
-      description: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length)]
+      description: dueArray[0][evt.target.value].advantage
+    }, false);
+    this.updateData({
+      information: {photo: dueArray[0][evt.target.value].src}
     }, false);
   }
 
@@ -387,7 +411,7 @@ export default class DestinationEdit extends SmartView {
     }
 
     this.updateData({
-      price: evt.target.value
+      price: Number(evt.target.value)
     }, false);
   }
 

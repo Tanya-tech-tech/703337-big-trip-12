@@ -20,6 +20,8 @@ export const isDatesEqual = (dateA, dateB) => {
   return moment(dateA).isSame(dateB, `day`);
 };
 
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 /* export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
 

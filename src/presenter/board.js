@@ -1,6 +1,7 @@
 import RouteView from "../view/route.js";
 import CostValueView from "../view/cost-value.js";
 import RouteListView from "../view/routeList.js";
+import LoadingView from "../view/loading.js";
 import SortView from "../view/sort.js";
 import DaysView from "../view/day.js";
 import DestinationsListView from "../view/containerDestinationInDay.js";
@@ -9,7 +10,6 @@ import SortContainerView from "../view/destinationsSortContainer.js";
 import DaysListView from "../view/daysList.js";
 import DestinationPresenter from "./destinationP.js";
 import PointNewPresenter from "./point-newP.js";
-import {datesArray} from "../main.js";
 
 import NoDestinationView from "../view/no-destination.js";
 import {renderElement, RenderPosition, remove} from "../utils/render.js";
@@ -18,7 +18,7 @@ import {filterPoint} from "../utils/filterU.js";
 import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 
 export default class Board {
-  constructor(routeContainer, tripContainer, tripEvents, pointsModel, filterModel) {
+  constructor(routeContainer, tripContainer, tripEvents, pointsModel, filterModel, api) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._routeContainer = routeContainer;
@@ -26,9 +26,10 @@ export default class Board {
     this._tripEvents = tripEvents;
     this._routeListComponent = new RouteView();
     this._currentSortType = SortType.DEFAULT;
-    this._datesTrip = datesArray;
 
     this._destinationPresenter = {};
+    this._isLoading = true;
+    this._api = api;
 
     this._sortComponent = null;
     this._sortContainer = new SortContainerView();
@@ -39,6 +40,7 @@ export default class Board {
     this._daysList = new DaysListView();
     this._destinationList = new DestinationsListView();
     this._noDestinationComponent = new NoDestinationView();
+    this._loadingComponent = new LoadingView();
 
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
@@ -57,6 +59,7 @@ export default class Board {
     renderElement(this._routeList, this._costValue, RenderPosition.BEFOREEND);
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderBoard();
   }
 
@@ -145,14 +148,17 @@ export default class Board {
   }
 
   _handleViewAction(actionType, updateType, update) {
-    // console.log(actionType, updateType, update);
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
     // update - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this._pointsModel.updatePoint(updateType, update);
+        // this._pointsModel.updatePoint(updateType, update);
+        this._api.updateTask(update)
+          .then((response) => {
+            this._pointsModel.updatePoint(updateType, response);
+          });
         break;
       case UserAction.ADD_TASK:
         this._pointsModel.addPoint(updateType, update);
@@ -179,6 +185,11 @@ export default class Board {
         this._clearBoard({resetSortType: true});
         this._renderBoard({isFilter: true});
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderBoard();
+        break;
     }
   }
 
@@ -191,14 +202,19 @@ export default class Board {
 
   _renderDestinations() {
     let containers = this._days.getElement().querySelectorAll(`li`);
+    // console.log(containers)
     for (let i = 0; i < quantityDays.length; i++) {
       quantityDays[i].forEach((it) => this._renderDestination(containers[i]
-        .querySelector(`ul:nth-child(2)`), it));
+        .querySelector(`.trip-events__list`), it));
     }
   }
 
   _renderNoDestinations() {
     renderElement(this._tripEvents, this._noDestinationComponent, RenderPosition.AFTEREND);
+  }
+
+  _renderLoading() {
+    renderElement(this._tripEvents, this._loadingComponent, RenderPosition.AFTEREND);
   }
 
   _renderRoute() {
@@ -212,8 +228,8 @@ export default class Board {
       .forEach((presenter) => presenter.destroy());
     this._destinationPresenter = {};
     remove(this._days);
-
     remove(this._noDestinationComponent);
+    remove(this._loadingComponent);
 
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
@@ -230,10 +246,14 @@ export default class Board {
   }
 
   _renderBoard({isFilter = false} = {}) {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
 
     const points = this._pointsModel.getPoints();
-    const pointCount = points.length;
 
+    const pointCount = points.length;
     if (pointCount === 0) {
       this._renderNoDestinations();
       return;
@@ -243,6 +263,7 @@ export default class Board {
     this._renderDaysList();
     this._days = new DaysView(this._pointsModel.getPoints());
     this._renderDays();
+    // console.log(quantityDays)
     this._renderDestinations();
 
     if (isFilter) {
