@@ -1,5 +1,5 @@
 import DestinationEditView from "../view/destination-edit.js";
-import {generateId} from "../utils/common.js";
+//import {generateId} from "../utils/common.js";
 import {remove, renderElement, RenderPosition} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 
@@ -44,15 +44,32 @@ export default class PointNew {
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
 
+  setSaving() {
+    this._taskEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._formEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this._formEditComponent.shake(resetFormState);
+  }
+
   _handleFormSubmit(destination) {
     this._changeData(
         UserAction.ADD_TASK,
         UpdateType.MINOR,
-        // Пока у нас нет сервера, который бы после сохранения
-        // выдывал честный id задачи, нам нужно позаботиться об этом самим
-        Object.assign({id: generateId()}, destination)
+        destination
     );
-    this.destroy();
+    // this.destroy();
   }
 
   _handleDeleteClick() {

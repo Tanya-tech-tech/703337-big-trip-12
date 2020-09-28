@@ -9,6 +9,12 @@ const Mode = {
   EDITING: `EDITING`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+   ABORTING: `ABORTING`
+};
+
 export default class Destination {
   constructor(destinationListContainer, changeData, changeMode) {
     this._destinationListContainer = destinationListContainer;
@@ -50,14 +56,15 @@ export default class Destination {
     }
 
     if (this._mode === Mode.EDITING) {
-      replace(this._formEditComponent, prevFormEditComponent);
+      // replace(this._formEditComponent, prevFormEditComponent);
+      replace(this._destinationComponent, prevFormEditComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevDestinationComponent);
     remove(prevFormEditComponent);
   }
 
-  // _handleFormSubmit(destination) {
   _handleFormSubmit(update) {
     if (update.destination === `Введите пункт назначения из предложенных`) {
       return;
@@ -69,7 +76,7 @@ export default class Destination {
         update
     );
 
-    this._replaceFormToDestination();
+    //this._replaceFormToDestination();
   }
 
   _handleDeleteClick(destination) {
@@ -104,6 +111,35 @@ export default class Destination {
   destroy() {
     remove(this._destinationComponent);
     remove(this._formEditComponent);
+  }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._taskEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._formEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._formEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ABORTING:
+        this._destinationComponent.shake(resetFormState);
+        this._formEditComponent.shake(resetFormState);
+        break;
+    }
   }
 
   _replaceDestinationToForm() {

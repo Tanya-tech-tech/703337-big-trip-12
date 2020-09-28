@@ -8,7 +8,7 @@ import DestinationsListView from "../view/containerDestinationInDay.js";
 import {quantityDays} from "../view/day.js";
 import SortContainerView from "../view/destinationsSortContainer.js";
 import DaysListView from "../view/daysList.js";
-import DestinationPresenter from "./destinationP.js";
+import DestinationPresenter, {State as DestinationPresenterViewState} from "./destinationP.js";
 import PointNewPresenter from "./point-newP.js";
 
 import NoDestinationView from "../view/no-destination.js";
@@ -155,16 +155,35 @@ export default class Board {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
         // this._pointsModel.updatePoint(updateType, update);
+        this._destinationPresenter[update.id].setViewState(DestinationPresenterViewState.SAVING);
         this._api.updateTask(update)
           .then((response) => {
             this._pointsModel.updatePoint(updateType, response);
+          })
+          .catch(() => {
+            this._destinationPresenter[update.id].setViewState(DestinationPresenterViewState.ABORTING);
           });
         break;
       case UserAction.ADD_TASK:
-        this._pointsModel.addPoint(updateType, update);
+        // this._pointsModel.addPoint(updateType, update);
+        this._pointNewPresenter.setSaving();
+        this._api.addTask(update)
+          .then((response) => {
+            this._pointsModel.addPoint(updateType, response);
+          })
+          .catch(() => {
+            this._taskNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_TASK:
-        this._pointsModel.deletePoint(updateType, update);
+        // this._pointsModel.deletePoint(updateType, update);
+        this._destinationPresenter[update.id].setViewState(TaskPresenterViewState.DELETING);
+        this._api.deleteTask(update).then(() => {
+          this._pointsModel.deletePoint(updateType, update);
+        })
+        .catch(() => {
+            this._taskPresenter[update.id].setViewState(TaskPresenterViewState.ABORTING);
+        });
         break;
     }
   }
