@@ -1,5 +1,5 @@
 import DestinationEditView from "../view/destination-edit.js";
-//import {generateId} from "../utils/common.js";
+// import {generateId} from "../utils/common.js";
 import {remove, renderElement, RenderPosition} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 

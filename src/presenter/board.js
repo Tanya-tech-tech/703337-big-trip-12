@@ -181,7 +181,7 @@ export default class Board {
           this._pointsModel.deletePoint(updateType, update);
         })
         .catch(() => {
-          this._taskPresenter[update.id].setViewState(TaskPresenterViewState.ABORTING);
+          this._destinationPresenter[update.id].setViewState(DestinationPresenterViewState.ABORTING);
         });
         break;
     }

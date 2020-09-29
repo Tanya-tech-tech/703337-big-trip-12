@@ -21,8 +21,7 @@ export default class Api {
   getTasks() {
     return this._load({url: `points`})
       .then(Api.toJSON)
-      .then((points) => points.map(PointsModel.adaptToClient))
-      .catch((err) => console.error('Ошибка:', error));
+      .then((points) => points.map(PointsModel.adaptToClient));
   }
 
   getOffers() {

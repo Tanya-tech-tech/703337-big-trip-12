@@ -12,7 +12,7 @@ const Mode = {
 export const State = {
   SAVING: `SAVING`,
   DELETING: `DELETING`,
-   ABORTING: `ABORTING`
+  ABORTING: `ABORTING`
 };
 
 export default class Destination {
@@ -76,7 +76,7 @@ export default class Destination {
         update
     );
 
-    //this._replaceFormToDestination();
+    // this._replaceFormToDestination();
   }
 
   _handleDeleteClick(destination) {

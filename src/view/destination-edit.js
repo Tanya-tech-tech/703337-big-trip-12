@@ -81,9 +81,7 @@ const createFormEditTemplate = (data) => {
     <p class="event__destination-description">${description}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">
-        ${
-          createPhotoTemplate(information.photo)
-        }
+        ${createPhotoTemplate(information.photo)}
       </div>
     </div>
   </section>`
