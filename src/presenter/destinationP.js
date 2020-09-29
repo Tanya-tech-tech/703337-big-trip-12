@@ -115,7 +115,7 @@ export default class Destination {
 
   setViewState(state) {
     const resetFormState = () => {
-      this._taskEditComponent.updateData({
+      this._formEditComponent.updateData({
         isDisabled: false,
         isSaving: false,
         isDeleting: false

@@ -66,7 +66,7 @@ export let optionForType = {};
 export let DESTINATIONS = [];
 export let DESCRIPTIONS = [];
 
-const AUTHORIZATION = `Basic aS2nd3dPwcl4sa6j`;
+const AUTHORIZATION = `Basic aS2nd3dPwcl4sa6j2`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip/`;
 const api = new Api(END_POINT, AUTHORIZATION);
 

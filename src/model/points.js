@@ -60,7 +60,7 @@ export default class Points extends Observer {
         {},
         point,
         {
-          dueDate: new Date(point.date_from), // На клиенте дата хранится как экземпляр Date
+          dueDate: point.date_from !== null ? new Date(point.date_from) : point.date_from, // На клиенте дата хранится как экземпляр Date
           time: {
             startTime: new Date(point.date_from),
             endTime: new Date(point.date_to)

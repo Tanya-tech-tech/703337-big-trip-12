@@ -10,6 +10,7 @@ import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_TASK = {
   type: ``,
+  favorite: false,
   destination: ``,
   description: ``,
   dueDate: null,
@@ -22,7 +23,7 @@ const BLANK_TASK = {
     typeOfOption: null,
     nameAndPriceOption: null
   },
-  infomation: {
+  information: {
     description: ``,
     photo: null
   }
@@ -70,8 +71,8 @@ const createFormEditTemplate = (data) => {
 
   const createPhotoTemplate = (arrayPhoto) => {
 
-    return arrayPhoto.map((photo) => `<img class="event__photo"
-      src="${photo.src}" alt="${photo.description}">`).join(``);
+    return arrayPhoto ? arrayPhoto.map((photo) => `<img class="event__photo"
+      src="${photo.src}" alt="${photo.description}">`).join(``) : ``;
   };
 
   const createDescriptionTemplate = description ?
@@ -80,7 +81,9 @@ const createFormEditTemplate = (data) => {
     <p class="event__destination-description">${description}</p>
     <div class="event__photos-container">
       <div class="event__photos-tape">
-        ${createPhotoTemplate(information.photo)}
+        ${
+          createPhotoTemplate(information.photo)
+        }
       </div>
     </div>
   </section>`
@@ -390,7 +393,7 @@ export default class DestinationEdit extends SmartView {
   _destinationInputHandler(evt) {
     evt.preventDefault();
     const checkNameDestination = DESTINATIONS.filter((it) => it === evt.target.value);
-
+    // console.log(DESCRIPTIONS)
     const dueArray = [];
     DESCRIPTIONS.slice().forEach((it) => {
       const key = Object.keys(it).find((element) => element === evt.target.value);
@@ -398,8 +401,6 @@ export default class DestinationEdit extends SmartView {
         dueArray.push(it);
       }
     });
-
-    // console.log(dueArray[0][evt.target.value].src)
 
     if (checkNameDestination.length === 0) {
       evt.target.value = `Введите пункт назначения из предложенных`;
@@ -413,6 +414,7 @@ export default class DestinationEdit extends SmartView {
     this.updateData({
       information: {photo: dueArray[0][evt.target.value].src}
     }, false);
+
   }
 
   _destinationPriceClickHandler(evt) {
@@ -476,6 +478,7 @@ export default class DestinationEdit extends SmartView {
         destination,
         {
           isFavorite: destination.favorite !== null,
+
           isDisabled: false,
           isSaving: false,
           isDeleting: false

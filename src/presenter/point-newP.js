@@ -45,7 +45,7 @@ export default class PointNew {
   }
 
   setSaving() {
-    this._taskEditComponent.updateData({
+    this._formEditComponent.updateData({
       isDisabled: true,
       isSaving: true
     });

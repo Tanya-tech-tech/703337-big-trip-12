@@ -21,7 +21,8 @@ export default class Api {
   getTasks() {
     return this._load({url: `points`})
       .then(Api.toJSON)
-      .then((points) => points.map(PointsModel.adaptToClient));
+      .then((points) => points.map(PointsModel.adaptToClient))
+      .catch((err) => console.error('Ошибка:', error));
   }
 
   getOffers() {
@@ -44,12 +45,6 @@ export default class Api {
       }
       return arrayOption;
     });
-
-    /* .catch(() => {
-      pointsModel.setPoints(UpdateType.INIT, []);
-      renderElement(siteMenuElement, siteMenuComponent, RenderPosition.AFTEREND);
-      siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
-    });*/
   }
 
   getDestinations() {
@@ -77,12 +72,13 @@ export default class Api {
       headers: new Headers({"Content-Type": `application/json`})
     })
       .then(Api.toJSON)
+      // .then((points) => {console.log(points)})
       .then(PointsModel.adaptToClient);
   }
 
   deleteTask(task) {
     return this._load({
-      url: `tasks/${task.id}`,
+      url: `points/${task.id}`,
       method: Method.DELETE
     });
   }

@@ -172,17 +172,16 @@ export default class Board {
             this._pointsModel.addPoint(updateType, response);
           })
           .catch(() => {
-            this._taskNewPresenter.setAborting();
+            this._pointNewPresenter.setAborting();
           });
         break;
       case UserAction.DELETE_TASK:
-        // this._pointsModel.deletePoint(updateType, update);
-        this._destinationPresenter[update.id].setViewState(TaskPresenterViewState.DELETING);
+        this._destinationPresenter[update.id].setViewState(DestinationPresenterViewState.DELETING);
         this._api.deleteTask(update).then(() => {
           this._pointsModel.deletePoint(updateType, update);
         })
         .catch(() => {
-            this._taskPresenter[update.id].setViewState(TaskPresenterViewState.ABORTING);
+          this._taskPresenter[update.id].setViewState(TaskPresenterViewState.ABORTING);
         });
         break;
     }
