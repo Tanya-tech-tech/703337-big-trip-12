@@ -74,7 +74,7 @@ const createDestinationTemplate = (destinationPoint) => {
       : ``;
   };
 
-  let newType = type[0].toUpperCase() + type.slice(1);
+  const newType = type[0].toUpperCase() + type.slice(1);
 
   return `<li class="trip-events__item">
         <div class="event">

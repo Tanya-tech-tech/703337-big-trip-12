@@ -1,17 +1,4 @@
 import Api from "./api.js";
-/*
-export const optionForType = {
-  Taxi: [{name: `Lunch in city`, cost: 50}, {name: `Order Uber`, cost: 35}, {name: `Book tickets`, cost: 20}],
-  Bus: [{name: `Choose seats`, cost: 15}],
-  Train: [{name: `Travel by train`, cost: 100}, {name: `Add meal`, cost: 70}],
-  Ship: ``,
-  Transport: [{name: `Switch to comfort class`, cost: 40}],
-  Drive: [{name: `Rent a car`, cost: 300}],
-  Flight: [{name: `Add meal`, cost: 70}],
-  CheckIn: [{name: `Add breakfast`, cost: 120}],
-  Sightseeing: [{name: `Book tickets`, cost: 20}],
-  Restaurant: ``
-};*/
 
 export const Waypoints = {
   TAXI: `Taxi`,
@@ -59,12 +46,12 @@ export const MenuItem = {
   STATS: `STATS`
 };
 
-export let optionsArray = [];
+export const optionsArray = [];
 
-export let optionForType = {};
+export const optionForType = {};
 
-export let DESTINATIONS = [];
-export let DESCRIPTIONS = [];
+export const DESTINATIONS = [];
+export const DESCRIPTIONS = [];
 
 const AUTHORIZATION = `Basic aS2nd3dPwcl4sa6j`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip/`;

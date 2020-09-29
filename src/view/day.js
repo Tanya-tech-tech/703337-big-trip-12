@@ -40,12 +40,12 @@ const createDayTemplate = (pointsModel) => {
 
   for (let i = 0; i < allDatesTrip.length; i++) {
     const date = () => {
-      let dateDay = new Date(allDatesTrip[i][0].dueDate);
+      const dateDay = new Date(allDatesTrip[i][0].dueDate);
       dateDay.setHours(23, 59, 59, 999);
       return new Date(dateDay).toLocaleDateString(`en-GB`, {month: `long`, day: `numeric`}).slice(0, 6);
     };
 
-    let oneDay = `<li class="trip-days__item  day">
+    const oneDay = `<li class="trip-days__item  day">
         <div class="day__info">
           <span class="day__counter">${count}</span>
           <time class="day__date" datetime="${date()}">${date()}</time>

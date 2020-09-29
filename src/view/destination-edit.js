@@ -30,7 +30,7 @@ const BLANK_TASK = {
 };
 
 const createFormEditTemplate = (data) => {
-  let {
+  const {
     type,
     price,
     destination,
@@ -163,7 +163,7 @@ const createFormEditTemplate = (data) => {
         </div>`).join(``);
   };
 
-  let newType = type ? type[0].toUpperCase() + type.slice(1) : ``;
+  const newType = type ? type[0].toUpperCase() + type.slice(1) : ``;
 
   const buttonAndOffers = createButtonOfferEditTemplate();
   const iconEvent = createIconEventEditTemplate();
@@ -422,16 +422,16 @@ export default class DestinationEdit extends SmartView {
 
   _destinationPriceHandler(evt) {
     // evt.preventDefault();
-    if (event.keyCode === 46 || event.keyCode === 8 || event.keyCode === 9 || event.keyCode === 27 ||
+    if (evt.keyCode === 46 || evt.keyCode === 8 || evt.keyCode === 9 || evt.keyCode === 27 ||
     // Разрешаем: Ctrl+A
-    (event.keyCode === 65 && event.ctrlKey === true) ||
+    (evt.keyCode === 65 && evt.ctrlKey === true) ||
     // Разрешаем: home, end, влево, вправо
-    (event.keyCode >= 35 && event.keyCode <= 39)) {
+    (evt.keyCode >= 35 && evt.keyCode <= 39)) {
       return;
     } else {
     // Запрещаем все, кроме цифр на основной клавиатуре, а так же Num-клавиатуре
-      if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
-        event.preventDefault();
+      if ((evt.keyCode < 48 || evt.keyCode > 57) && (evt.keyCode < 96 || evt.keyCode > 105)) {
+        evt.preventDefault();
       }
     }
 

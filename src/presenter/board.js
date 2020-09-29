@@ -219,7 +219,7 @@ export default class Board {
   }
 
   _renderDestinations() {
-    let containers = this._days.getElement().querySelectorAll(`li`);
+    const containers = this._days.getElement().querySelectorAll(`li`);
     // console.log(containers)
     for (let i = 0; i < quantityDays.length; i++) {
       quantityDays[i].forEach((it) => this._renderDestination(containers[i]
@@ -288,7 +288,7 @@ export default class Board {
       this._clearBoard();
       this._renderDaysList();
       const filterType = this._filterModel.getFilter(); // активный фильтр
-      let filteredDestination = filterPoint[filterType](points);
+      const filteredDestination = filterPoint[filterType](points);
       this._days = new DaysView(filteredDestination);
 
       this._renderDays();

@@ -19,7 +19,7 @@ export const countPointsByMoney = (points, arrayCompare) => {
 export const arrayPointsByTransport = (points, arrayCompare) => {
   const arrayTransport = points.slice();
   arrayCompare.forEach((it) => {
-    let index = arrayTransport.indexOf(`${it}`);
+    const index = arrayTransport.indexOf(`${it}`);
     if (index > -1) {
       arrayTransport.splice(index, 1);
     }
@@ -28,7 +28,7 @@ export const arrayPointsByTransport = (points, arrayCompare) => {
 };
 
 export const countPointsByTransport = (points, arrayCompare) => {
-  let finalArray = [];
+  const finalArray = [];
   arrayCompare.map((it) => {
     const repeat = [];
     points.forEach((point) => {
